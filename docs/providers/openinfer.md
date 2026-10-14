@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 | Provider Route on LiteLLM | `openinfer/` |
 | Link to Provider Doc | [OpenInfer ↗](https://openinfer.ai/) |
 | Base URL | `https://api.openinfer.ai/v1` |
-| Supported Operations | [`/chat/completions`](#sample-usage) |
+| Supported Operations | [`/chat/completions`](#usage---litellm-python-sdk) |
 
 <br />
 <br />
