@@ -1,16 +1,19 @@
 ---
 slug: fusion-terminal-bench-benchmark
-title: "Model Fusion: 14/21 Tasks Solved vs 9/21 on One Model"
+title: "Introducing LiteLLM Fusion: 56% More Tasks Solved Than Fable 5"
 date: 2026-09-01T14:00:00
 authors:
   - tin
-description: "Running three models on the same task and synthesizing their work solved 14 of 21 Terminal-Bench tasks against 9 for Claude Fable-5 alone. Total spend rose 36%, cost per solved task fell 12%, and turn latency went up 5x."
+image: ./lite-fusion-light.png
+description: "LiteLLM Auto Router Fusion ran three models on the same task and synthesized their work, solving 14 of 21 Terminal-Bench tasks against 9 for Claude Fable-5 alone. Total spend rose 36%, cost per solved task fell 12%, and turn latency went up 5x."
 keywords: [model fusion, best of n, llm ensemble, terminal bench, llm benchmarks, model routing, litellm, agent benchmarks]
-tags: [routing, benchmarks, cost, engineering]
+tags: [routing, auto-router, benchmarks, cost, engineering]
 hide_table_of_contents: false
 ---
 
-**Fusion solved 14 of 21 Terminal-Bench tasks; Claude Fable-5 on its own solved 9.** Fusion here means running the task on several models in parallel and having one of them synthesize the candidate work into a single answer. Both arms ran the same 21 tasks.
+![LiteLLM Auto Router Fusion solved 14 of 21 tasks against 9 for Fable 5](./lite-fusion-light.png)
+
+**LiteLLM Auto Router Fusion solved 14 of 21 Terminal-Bench tasks; Claude Fable-5 on its own solved 9.** Fusion runs the task on several models in parallel and has one of them synthesize the candidate work into a single answer. Both arms ran the same 21 tasks.
 
 {/* truncate */}
 
@@ -18,7 +21,7 @@ hide_table_of_contents: false
 
 Get early access, work directly with the LiteLLM team, and influence the roadmap with your production traffic.
 
-<a className="button button--primary button--lg" style={{background: '#2e8555', borderColor: '#2e8555', color: '#fff'}} href="https://calendar.app.google/i2e7qVEJphHi5S8UA">Apply to Become a Design Partner</a>
+<a className="button button--primary button--lg" href="https://calendly.com/tin-berri/litellm-auto-router-design-partner">Apply to Become a Design Partner</a>
 
 <br /><br />
 
@@ -102,7 +105,7 @@ Fusion buys completed tasks with latency and total spend. That trade works when 
 
 :::info
 
-Point an agent at several models on the same task, synthesize the results, and compare completed tasks per dollar against your current single model. Share numbers or questions in [discussion #32168](https://github.com/BerriAI/litellm/discussions/32168). To work on this with us directly, [apply to be a design partner](https://calendar.app.google/i2e7qVEJphHi5S8UA).
+Point an agent at several models on the same task, synthesize the results, and compare completed tasks per dollar against your current single model. Share numbers or questions in [discussion #32168](https://github.com/BerriAI/litellm/discussions/32168). To work on this with us directly, [apply to be a design partner](https://calendly.com/tin-berri/litellm-auto-router-design-partner).
 
 :::
 
