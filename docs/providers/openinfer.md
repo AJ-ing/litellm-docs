@@ -157,22 +157,26 @@ model_list:
 Start your LiteLLM Proxy server:
 
 ```bash showLineNumbers title="Start LiteLLM Proxy"
-export LITELLM_MASTER_KEY="sk-1234"  # clients send this as their API key
+export LITELLM_MASTER_KEY="sk-$(openssl rand -hex 32)"
+printf 'Local proxy key: %s\n' "$LITELLM_MASTER_KEY"
 litellm --config config.yaml
 
 # RUNNING on http://0.0.0.0:4000
 ```
 
+In another terminal, set `LITELLM_API_KEY` to the key printed above, then call the proxy:
+
 <Tabs>
 <TabItem value="openai-sdk" label="OpenAI SDK">
 
 ```python showLineNumbers title="OpenInfer via Proxy - Non-streaming"
+import os
 from openai import OpenAI
 
 # Initialize client with your proxy URL
 client = OpenAI(
-    base_url="http://localhost:4000",  # Your proxy URL
-    api_key="sk-1234"                  # Your LITELLM_MASTER_KEY
+    base_url="http://localhost:4000",       # Your proxy URL
+    api_key=os.environ["LITELLM_API_KEY"]   # The proxy key printed at startup
 )
 
 # Non-streaming response
@@ -185,12 +189,13 @@ print(response.choices[0].message.content)
 ```
 
 ```python showLineNumbers title="OpenInfer via Proxy - Streaming"
+import os
 from openai import OpenAI
 
 # Initialize client with your proxy URL
 client = OpenAI(
-    base_url="http://localhost:4000",  # Your proxy URL
-    api_key="sk-1234"                  # Your LITELLM_MASTER_KEY
+    base_url="http://localhost:4000",       # Your proxy URL
+    api_key=os.environ["LITELLM_API_KEY"]   # The proxy key printed at startup
 )
 
 # Streaming response
@@ -209,6 +214,7 @@ for chunk in response:
 <TabItem value="litellm-sdk" label="LiteLLM SDK">
 
 ```python showLineNumbers title="OpenInfer via Proxy - LiteLLM SDK"
+import os
 import litellm
 
 # Configure LiteLLM to use your proxy
@@ -216,13 +222,14 @@ response = litellm.completion(
     model="litellm_proxy/oi-qwen",
     messages=[{"role": "user", "content": "hello from litellm"}],
     api_base="http://localhost:4000",
-    api_key="sk-1234"
+    api_key=os.environ["LITELLM_API_KEY"]
 )
 
 print(response.choices[0].message.content)
 ```
 
 ```python showLineNumbers title="OpenInfer via Proxy - LiteLLM SDK Streaming"
+import os
 import litellm
 
 # Configure LiteLLM to use your proxy with streaming
@@ -230,7 +237,7 @@ response = litellm.completion(
     model="litellm_proxy/oi-glm",
     messages=[{"role": "user", "content": "hello from litellm"}],
     api_base="http://localhost:4000",
-    api_key="sk-1234",
+    api_key=os.environ["LITELLM_API_KEY"],
     stream=True
 )
 
@@ -245,7 +252,7 @@ for chunk in response:
 ```bash showLineNumbers title="OpenInfer via Proxy - cURL"
 curl http://localhost:4000/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-1234" \
+  -H "Authorization: Bearer $LITELLM_API_KEY" \
   -d '{
     "model": "oi-qwen",
     "messages": [{"role": "user", "content": "hello from litellm"}]
@@ -255,7 +262,7 @@ curl http://localhost:4000/v1/chat/completions \
 ```bash showLineNumbers title="OpenInfer via Proxy - cURL Streaming"
 curl http://localhost:4000/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-1234" \
+  -H "Authorization: Bearer $LITELLM_API_KEY" \
   -d '{
     "model": "oi-glm",
     "messages": [{"role": "user", "content": "hello from litellm"}],
@@ -266,7 +273,7 @@ curl http://localhost:4000/v1/chat/completions \
 ```bash showLineNumbers title="OpenInfer via Proxy - cURL Responses API"
 curl http://localhost:4000/v1/responses \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-1234" \
+  -H "Authorization: Bearer $LITELLM_API_KEY" \
   -d '{
     "model": "oi-qwen",
     "input": "hello from litellm"
@@ -276,7 +283,7 @@ curl http://localhost:4000/v1/responses \
 ```bash showLineNumbers title="OpenInfer via Proxy - cURL Messages API"
 curl http://localhost:4000/v1/messages \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-1234" \
+  -H "Authorization: Bearer $LITELLM_API_KEY" \
   -d '{
     "model": "oi-glm",
     "max_tokens": 200,
