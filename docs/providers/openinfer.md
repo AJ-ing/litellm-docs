@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 | Provider Route on LiteLLM | `openinfer/` |
 | Link to Provider Doc | [OpenInfer ↗](https://openinfer.ai/) |
 | Base URL | `https://api.openinfer.ai/v1` |
-| Supported Operations | [`/chat/completions`](#usage---litellm-python-sdk) |
+| Supported Operations | [`/chat/completions`](#usage---litellm-python-sdk), [`/responses`](#responses-api), [`/messages`](#anthropic-messages-api) |
 
 <br />
 <br />
@@ -24,12 +24,15 @@ OpenInfer model IDs use an `@oi/` prefix. LiteLLM catalog keys are `openinfer/@o
 
 ## Available Models
 
-| Model | Context window | Max output |
-|-------|----------------|------------|
-| `openinfer/@oi/GLM-5.3-Flash` | 393,216 | 8,192 |
-| `openinfer/@oi/Qwen3.5-27B` | 32,768 | 8,192 |
+| Model | Context window |
+|-------|----------------|
+| `openinfer/@oi/GLM-5.3-Flash` | 393,216 |
+| `openinfer/@oi/Qwen3.5-27B` | 32,768 |
+| `openinfer/@oi/Qwen3.5-9B` | 100,000 |
 
-These are the models OpenInfer publishes a price for, so LiteLLM tracks their spend. Any other OpenInfer model still routes with the `openinfer/` prefix, but its spend is recorded as $0 until a price is added.
+These are the models OpenInfer publishes a price for, so LiteLLM tracks their spend. OpenInfer bounds a request only by the context window, so prompt plus output tokens must fit in it.
+
+Any other OpenInfer model also works with the `openinfer/` prefix, tool calls included, but LiteLLM records its spend as $0 until a price is added.
 
 ## Required Variables
 
@@ -87,6 +90,46 @@ response = completion(
 
 for chunk in response:
     print(chunk)
+```
+
+### Responses API
+
+LiteLLM sends `/responses` calls to OpenInfer's own `/v1/responses` endpoint.
+
+```python showLineNumbers title="OpenInfer Responses API"
+import os
+import litellm
+
+os.environ["OPENINFER_API_KEY"] = ""  # your OpenInfer API key
+
+response = litellm.responses(
+    model="openinfer/@oi/Qwen3.5-27B",
+    input="Name three primary colors"
+)
+
+print(response.output[0].content[0].text)
+```
+
+### Anthropic Messages API
+
+LiteLLM sends `/messages` calls to OpenInfer's own `/v1/messages` endpoint.
+
+```python showLineNumbers title="OpenInfer Messages API"
+import asyncio
+import os
+import litellm
+
+os.environ["OPENINFER_API_KEY"] = ""  # your OpenInfer API key
+
+async def main():
+    response = await litellm.anthropic.messages.acreate(
+        model="openinfer/@oi/GLM-5.3-Flash",
+        messages=[{"role": "user", "content": "Name three primary colors"}],
+        max_tokens=200
+    )
+    print(response["content"])
+
+asyncio.run(main())
 ```
 
 ## Usage - LiteLLM Proxy
@@ -212,6 +255,27 @@ curl http://localhost:4000/v1/chat/completions \
     "model": "oi-glm",
     "messages": [{"role": "user", "content": "hello from litellm"}],
     "stream": true
+  }'
+```
+
+```bash showLineNumbers title="OpenInfer via Proxy - cURL Responses API"
+curl http://localhost:4000/v1/responses \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-proxy-api-key" \
+  -d '{
+    "model": "oi-qwen",
+    "input": "hello from litellm"
+  }'
+```
+
+```bash showLineNumbers title="OpenInfer via Proxy - cURL Messages API"
+curl http://localhost:4000/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-proxy-api-key" \
+  -d '{
+    "model": "oi-glm",
+    "max_tokens": 200,
+    "messages": [{"role": "user", "content": "hello from litellm"}]
   }'
 ```
 
