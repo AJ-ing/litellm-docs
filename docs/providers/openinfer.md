@@ -285,7 +285,7 @@ curl http://localhost:4000/v1/messages \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $LITELLM_API_KEY" \
   -d '{
-    "model": "oi-glm",
+    "model": "oi-qwen",
     "max_tokens": 200,
     "messages": [{"role": "user", "content": "hello from litellm"}]
   }'
