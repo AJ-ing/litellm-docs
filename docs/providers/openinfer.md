@@ -3,6 +3,10 @@ import TabItem from '@theme/TabItem';
 
 # OpenInfer
 
+:::info
+Available from v1.108.0.
+:::
+
 ## Overview
 
 | Property | Details |
@@ -18,9 +22,9 @@ import TabItem from '@theme/TabItem';
 
 https://openinfer.ai/
 
-**We support ALL OpenInfer models, just set `openinfer/` as a prefix when sending completion requests**
+**We support ALL OpenInfer chat models, just set `openinfer/` as a prefix when sending completion requests**
 
-OpenInfer model IDs use an `@oi/` prefix. LiteLLM catalog keys are `openinfer/@oi/...`, so the `@oi/` prefix is forwarded to the API.
+OpenInfer chat model IDs use an `@oi/` prefix. LiteLLM catalog keys are `openinfer/@oi/...`, so the `@oi/` prefix is forwarded to the API.
 
 ## Available Models
 
@@ -32,7 +36,7 @@ OpenInfer model IDs use an `@oi/` prefix. LiteLLM catalog keys are `openinfer/@o
 
 These are the models OpenInfer publishes a price for, so LiteLLM tracks their spend. OpenInfer bounds a request only by the context window, so prompt plus output tokens must fit in it.
 
-Any other OpenInfer model also works with the `openinfer/` prefix, tool calls included, but LiteLLM records its spend as $0 until a price is added.
+Any other OpenInfer chat model also works with the `openinfer/` prefix, but LiteLLM records its spend as $0 until a price is added. LiteLLM sends tool calls to every OpenInfer model, and OpenInfer answers with a 400 for a model it serves without tool support, such as `@oi/Gemma-4-31B-It`.
 
 ## Required Variables
 
@@ -153,6 +157,7 @@ model_list:
 Start your LiteLLM Proxy server:
 
 ```bash showLineNumbers title="Start LiteLLM Proxy"
+export LITELLM_MASTER_KEY="sk-1234"  # clients send this as their API key
 litellm --config config.yaml
 
 # RUNNING on http://0.0.0.0:4000
@@ -167,7 +172,7 @@ from openai import OpenAI
 # Initialize client with your proxy URL
 client = OpenAI(
     base_url="http://localhost:4000",  # Your proxy URL
-    api_key="your-proxy-api-key"       # Your proxy API key
+    api_key="sk-1234"                  # Your LITELLM_MASTER_KEY
 )
 
 # Non-streaming response
@@ -185,7 +190,7 @@ from openai import OpenAI
 # Initialize client with your proxy URL
 client = OpenAI(
     base_url="http://localhost:4000",  # Your proxy URL
-    api_key="your-proxy-api-key"       # Your proxy API key
+    api_key="sk-1234"                  # Your LITELLM_MASTER_KEY
 )
 
 # Streaming response
@@ -211,7 +216,7 @@ response = litellm.completion(
     model="litellm_proxy/oi-qwen",
     messages=[{"role": "user", "content": "hello from litellm"}],
     api_base="http://localhost:4000",
-    api_key="your-proxy-api-key"
+    api_key="sk-1234"
 )
 
 print(response.choices[0].message.content)
@@ -225,7 +230,7 @@ response = litellm.completion(
     model="litellm_proxy/oi-glm",
     messages=[{"role": "user", "content": "hello from litellm"}],
     api_base="http://localhost:4000",
-    api_key="your-proxy-api-key",
+    api_key="sk-1234",
     stream=True
 )
 
@@ -240,7 +245,7 @@ for chunk in response:
 ```bash showLineNumbers title="OpenInfer via Proxy - cURL"
 curl http://localhost:4000/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-proxy-api-key" \
+  -H "Authorization: Bearer sk-1234" \
   -d '{
     "model": "oi-qwen",
     "messages": [{"role": "user", "content": "hello from litellm"}]
@@ -250,7 +255,7 @@ curl http://localhost:4000/v1/chat/completions \
 ```bash showLineNumbers title="OpenInfer via Proxy - cURL Streaming"
 curl http://localhost:4000/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-proxy-api-key" \
+  -H "Authorization: Bearer sk-1234" \
   -d '{
     "model": "oi-glm",
     "messages": [{"role": "user", "content": "hello from litellm"}],
@@ -261,7 +266,7 @@ curl http://localhost:4000/v1/chat/completions \
 ```bash showLineNumbers title="OpenInfer via Proxy - cURL Responses API"
 curl http://localhost:4000/v1/responses \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-proxy-api-key" \
+  -H "Authorization: Bearer sk-1234" \
   -d '{
     "model": "oi-qwen",
     "input": "hello from litellm"
@@ -271,7 +276,7 @@ curl http://localhost:4000/v1/responses \
 ```bash showLineNumbers title="OpenInfer via Proxy - cURL Messages API"
 curl http://localhost:4000/v1/messages \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer your-proxy-api-key" \
+  -H "Authorization: Bearer sk-1234" \
   -d '{
     "model": "oi-glm",
     "max_tokens": 200,
