@@ -83,7 +83,7 @@ messages = [{"content": "Hello, how are you?", "role": "user"}]
 
 # OpenInfer call with streaming
 response = completion(
-    model="openinfer/@oi/GLM-5.3-Flash",
+    model="openinfer/@oi/Qwen3.5-27B",
     messages=messages,
     stream=True
 )
@@ -123,7 +123,7 @@ os.environ["OPENINFER_API_KEY"] = ""  # your OpenInfer API key
 
 async def main():
     response = await litellm.anthropic.messages.acreate(
-        model="openinfer/@oi/GLM-5.3-Flash",
+        model="openinfer/@oi/Qwen3.5-27B",
         messages=[{"role": "user", "content": "Name three primary colors"}],
         max_tokens=200
     )
