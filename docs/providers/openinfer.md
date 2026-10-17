@@ -26,10 +26,10 @@ OpenInfer model IDs use an `@oi/` prefix. LiteLLM catalog keys are `openinfer/@o
 
 | Model | Context window | Max output |
 |-------|----------------|------------|
-| `openinfer/@oi/Llama-3.2-1B-Instruct` | 128,000 | 8,192 |
-| `openinfer/@oi/Qwen3.5-9B` | 262,144 | 8,192 |
-| `openinfer/@oi/Qwen3.5-27B` | 262,144 | 8,192 |
-| `openinfer/@oi/Gemma4-31B-It` | 262,144 | 8,192 |
+| `openinfer/@oi/GLM-5.3-Flash` | 393,216 | 8,192 |
+| `openinfer/@oi/Qwen3.5-27B` | 32,768 | 8,192 |
+
+These are the models OpenInfer publishes a price for, so LiteLLM tracks their spend. Any other OpenInfer model still routes with the `openinfer/` prefix, but its spend is recorded as $0 until a price is added.
 
 ## Required Variables
 
@@ -60,7 +60,7 @@ messages = [{"content": "Hello, how are you?", "role": "user"}]
 
 # OpenInfer call
 response = completion(
-    model="openinfer/@oi/Llama-3.2-1B-Instruct",
+    model="openinfer/@oi/Qwen3.5-27B",
     messages=messages
 )
 
@@ -80,7 +80,7 @@ messages = [{"content": "Hello, how are you?", "role": "user"}]
 
 # OpenInfer call with streaming
 response = completion(
-    model="openinfer/@oi/Qwen3.5-9B",
+    model="openinfer/@oi/GLM-5.3-Flash",
     messages=messages,
     stream=True
 )
@@ -95,14 +95,14 @@ Add the following to your LiteLLM Proxy configuration file:
 
 ```yaml showLineNumbers title="config.yaml"
 model_list:
-  - model_name: oi-llama
-    litellm_params:
-      model: openinfer/@oi/Llama-3.2-1B-Instruct
-      api_key: os.environ/OPENINFER_API_KEY
-
   - model_name: oi-qwen
     litellm_params:
-      model: openinfer/@oi/Qwen3.5-9B
+      model: openinfer/@oi/Qwen3.5-27B
+      api_key: os.environ/OPENINFER_API_KEY
+
+  - model_name: oi-glm
+    litellm_params:
+      model: openinfer/@oi/GLM-5.3-Flash
       api_key: os.environ/OPENINFER_API_KEY
       api_base: os.environ/OPENINFER_API_BASE  # optional
 ```
@@ -129,7 +129,7 @@ client = OpenAI(
 
 # Non-streaming response
 response = client.chat.completions.create(
-    model="oi-llama",
+    model="oi-qwen",
     messages=[{"role": "user", "content": "hello from litellm"}]
 )
 
@@ -147,7 +147,7 @@ client = OpenAI(
 
 # Streaming response
 response = client.chat.completions.create(
-    model="oi-qwen",
+    model="oi-glm",
     messages=[{"role": "user", "content": "hello from litellm"}],
     stream=True
 )
@@ -165,7 +165,7 @@ import litellm
 
 # Configure LiteLLM to use your proxy
 response = litellm.completion(
-    model="litellm_proxy/oi-llama",
+    model="litellm_proxy/oi-qwen",
     messages=[{"role": "user", "content": "hello from litellm"}],
     api_base="http://localhost:4000",
     api_key="your-proxy-api-key"
@@ -179,7 +179,7 @@ import litellm
 
 # Configure LiteLLM to use your proxy with streaming
 response = litellm.completion(
-    model="litellm_proxy/oi-qwen",
+    model="litellm_proxy/oi-glm",
     messages=[{"role": "user", "content": "hello from litellm"}],
     api_base="http://localhost:4000",
     api_key="your-proxy-api-key",
@@ -199,7 +199,7 @@ curl http://localhost:4000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-proxy-api-key" \
   -d '{
-    "model": "oi-llama",
+    "model": "oi-qwen",
     "messages": [{"role": "user", "content": "hello from litellm"}]
   }'
 ```
@@ -209,7 +209,7 @@ curl http://localhost:4000/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-proxy-api-key" \
   -d '{
-    "model": "oi-qwen",
+    "model": "oi-glm",
     "messages": [{"role": "user", "content": "hello from litellm"}],
     "stream": true
   }'
